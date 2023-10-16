@@ -33,8 +33,10 @@
 ### Build and Flash
 
 * Only 3 files to consider: 
+    
     gpio_example_main.c: main file
-    ButtonLib.h and ButtonLib.c: Button Library I have built for reuse purpose, simple and stable.
+
+    ButtonLib.h and ButtonLib.c: Button Library I have built for re-use purpose, simple and stable.
 
 * If you use Espressif-IDE, just clone this project from my github, then, it will be simply to run
 
