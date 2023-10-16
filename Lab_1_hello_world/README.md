@@ -1,53 +1,50 @@
 | Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-S2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- | -------- |
 
-# Hello World Example
+## GPIO functions:
 
-Starts a FreeRTOS task to print "Hello World".
-
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## Test:
 
 ## How to use example
 
-Follow detailed instructions provided specifically for this example. 
-
-Select the instructions depending on Espressif chip installed on your development board:
-
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+* Firstly, check my demo video: https://youtube.com/shorts/Uvc1HDPJlrw?feature=share
 
 
-## Example folder contents
+### Hardware Required
 
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
+* A development board with any Espressif SoC (e.g., ESP32-DevKitC, ESP-WROVER-KIT, etc.)
+* A USB cable for Power supply and programming
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both). 
+### Software Required
 
-Below is short explanation of remaining files in the project folder.
+* I am using Espressif-IDE, ESP32 environment built-in IDE, the newest release.
+* Using Python 13 
+
+### Build and Flash
+
+* If you use Espressif-IDE, just clone this project from my github, then, it will be simply to run
+
+## Example Output
+
+As you run the example, you will see the following log:
 
 ```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
+Hello world!
+This is esp32 chip with 2 CPU core(s), WiFi/BT/BLE, silicon revision v3.0, 2MB external flash
+Minimum free heap size: 301716 bytes
+Restarting in 10 seconds...
+Restarting in 9 seconds...
+Restarting in 8 seconds...
+Restarting in 7 seconds...
+Restarting in 6 seconds...
+Restarting in 5 seconds...
+Restarting in 4 seconds...
+Restarting in 3 seconds...
+Restarting in 2 seconds...
+Restarting in 1 seconds...
+Restarting in 0 seconds...
+Restarting now.
+ets Jul 29 2019 12:21:46
+...
 ```
 
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
-
-## Troubleshooting
-
-* Program upload failure
-
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
-
-## Technical support and feedback
-
-Please use the following feedback channels:
-
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
-
-We will get back to you as soon as possible.
