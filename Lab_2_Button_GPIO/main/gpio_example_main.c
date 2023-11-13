@@ -9,7 +9,8 @@
 #include "driver/gpio.h"
 #include "freertos/timers.h"
 #include "esp_timer.h"
-
+#include "esp_system.h"
+#include "esp_task_wdt.h"
 /* Personal INCLUDE*/
 #include "ButtonLIB.h"
 
@@ -23,11 +24,10 @@ void OneSecRoutine(){
 }
 
 
-
 void app_main(void)
 {
 
 	Button_RUN();
-	xTaskCreate(OneSecRoutine, "OneSecRoutine", 2048, NULL, 10, NULL);
+	xTaskCreatePinnedToCore(OneSecRoutine, "OneSecRoutine", 2048, NULL, 9, NULL, 1);
 
 }
