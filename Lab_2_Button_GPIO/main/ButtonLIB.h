@@ -39,9 +39,9 @@ II. How to use
 
 #define ESP_INTR_FLAG_DEFAULT 0
 
-static void IRAM_ATTR gpio_isr_handler(void* arg);
+void IRAM_ATTR gpio_isr_handler(void* arg);
 
-static void gpio_task_example(void* arg);
+void gpio_task_example(void* arg);
 
 
 void LED_INIT(void);

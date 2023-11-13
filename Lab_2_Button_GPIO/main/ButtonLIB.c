@@ -3,7 +3,7 @@
 
 static QueueHandle_t gpio_evt_queue = NULL;
 
-static void IRAM_ATTR gpio_isr_handler(void* arg){
+void IRAM_ATTR gpio_isr_handler(void* arg){
     uint32_t gpio_num = (uint32_t) arg;
     xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
 }
@@ -11,7 +11,7 @@ static void IRAM_ATTR gpio_isr_handler(void* arg){
 
 
 
-static void gpio_task_example(void* arg)
+void gpio_task_example(void* arg)
 {
     uint32_t io_num;
     long long int timer_hold = -99999999;
