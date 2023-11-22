@@ -66,6 +66,7 @@ The Idle task 2 on core 0 is CALLED at 140, work remain: 6
 ```
 
 The Highest task is allowed to run first. While it is running, no task is able to run. Moreover, while the IDLE task in running state, the HIGHEST task will preempt to run, once it leaves BLOCKING state. That is how ``Preemption`` works.
+
 When Highest task is in blocking state, The 2 ILDE tasks will share their time to execute. That is how ``Time-slicng`` works.
 
 ### `Preemption without Time-slicing`
@@ -105,6 +106,7 @@ The Idle task 2 on core 0 START at 150
 ```
 
 The Highest task is allowed to run first. While it is running, no task is able to run. Moreover, while the IDLE task in running state, the HIGHEST task will preempt to run, once it leaves BLOCKING state. That is how ``Preemption`` works.
+
 When Highest task is in blocking state, There are 3 IDLE tasks in READY state. Only 1 of 3 IDLE task will be chosen by kernel, and take all the time to run until it ends. That presents ``WITHOUT Time-slicng`` works.
 
 ### `Preemption without Time-slicing`
@@ -147,4 +149,5 @@ The Idle task 1 on core 0 is CALLED at 122, work remain: 0
 ```
 
 In this mode, `Time-slicing` makes no effect. If there is any task running, No task is able to preempt to run. Whether it is HIGHEST priority or not.
+
 That is the reason why the HIGHEST has to wait until 122, while it has been already in READY state at 120. 
