@@ -13,6 +13,7 @@ Moroever, There are 3 functional tasks, which will get commands from QUEUE and e
 
 The application creates a TCP socket with the specified port number and waits for a connection request from the client. After accepting a request from the client, connection between server and client is established and the application waits for some data to be received from the client. Received data are filtered first by the WRTIER TASK, then push into the QUEUE. There are 3 READERs, including: `LED Task`, `Temperature and Humidity Task` and `Monitoring Task`.
 
+
 Please check out my demo first: `https://youtu.be/a2zc2-b-34o`
 
 ## How to use example
