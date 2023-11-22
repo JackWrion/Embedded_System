@@ -2,5 +2,5 @@
 #                    INCLUDE_DIRS ".")
 
 
-idf_component_register(SRCS "main.c" "ButtonLIB.c"
+idf_component_register(SRCS "main.c"
                     INCLUDE_DIRS ".")
