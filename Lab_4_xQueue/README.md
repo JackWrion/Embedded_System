@@ -2,74 +2,75 @@
 | ----------------- | ----- | -------- | -------- | -------- | -------- |
 
 
-# TCP Server example
+# Queue in TCP Server example
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+We uses PC as a TCP client to generate command. This is WRITER.
 
-The application creates a TCP socket with the specified port number and waits for a connection request from the client. After accepting a request from the client, connection between server and client is established and the application waits for some data to be received from the client. Received data are printed as ASCII text and retransmitted back to the client.
+The ESP32 works as a TCP server, which receives and filters commands as RECEPTION task, then push to QUEUE.
+
+Moroever, There are 3 functional tasks, which will get commands from QUEUE and execute them if valid. These are READERs.
+
+
+The application creates a TCP socket with the specified port number and waits for a connection request from the client. After accepting a request from the client, connection between server and client is established and the application waits for some data to be received from the client. Received data are filtered first by the WRTIER TASK, then push into the QUEUE. There are 3 READERs, including: `LED Task`, `Temperature and Humidity Task` and `Monitoring Task`.
+
+Please check out my demo first: `https://youtu.be/a2zc2-b-34o`
 
 ## How to use example
 
-In order to create TCP client that communicates with TCP server example, choose one of the following options.
+### Hardware Required
 
-There are many host-side tools which can be used to interact with the UDP/TCP server/client.
-One command line tool is [netcat](http://netcat.sourceforge.net) which can send and receive many kinds of packets.
-Note: please replace `192.168.0.167 3333` with desired IPV4/IPV6 address (displayed in monitor console) and port number in the following command.
+This example should be able to run on any commonly available ESP32 development board.
 
-In addition to those tools, simple Python scripts can be found under sockets/scripts directory. Every script is designed to interact with one of the examples.
+### Software Required
 
-### TCP client using netcat
-```
-nc 192.168.0.167 3333
-```
+I only guarantee this programme will run well on ``ESPRESSIF_IDE``.
 
-### Python scripts
-Script example_test.py could be used as a counter part to the tcp-server application,
-IP address and the message to be send to the server shall be stated as arguments. Example:
+In this lab, I'm using ``Hercules`` terminal to simulate a TCP client.
 
-```
-python example_test.py 192.168.0.167 Message
-```
-Note that this script is used in automated tests, as well, so the IDF test framework packages need to be imported;
-please add `$IDF_PATH/tools/ci/python_packages` to `PYTHONPATH`.
+### Build and Flash
 
-## Hardware Required
+Build the project and flash it to the board. You can use any Terminal application to observe the results. I also recommend using built-in terminal of ``ESPRESSIF_IDE``.
 
-This example can be run on any commonly available ESP32 development board.
-
-## Configure the project
-
-```
-idf.py menuconfig
-```
-
-Set following parameters under Example Configuration Options:
-
-* Set `IP version` of the example to be IPV4 or IPV6.
-
-* Set `Port` number of the socket, that server example will create.
-
-* Set `TCP keep-alive idle time(s)` value of TCP keep alive idle time. This time is the time between the last data transmission.
-
-* Set `TCP keep-alive interval time(s)` value of TCP keep alive interval time. This time is the interval time of keepalive probe packets.
-
-* Set `TCP keep-alive packet retry send counts` value of TCP keep alive packet retry send counts. This is the number of retries of the keepalive probe packet.
-
-Configure Wi-Fi or Ethernet under "Example Connection Configuration" menu. See "Establishing Wi-Fi or Ethernet Connection" section in [examples/protocols/README.md](../../README.md) for more details.
-
-## Build and Flash
-
-Build the project and flash it to the board, then run monitor tool to view serial output:
-
-```
-idf.py -p PORT flash monitor
-```
+(Replace PORT with the name of the serial port to use.)
 
 (To exit the serial monitor, type ``Ctrl-]``.)
 
-See the Getting Started Guide for full steps to configure and use ESP-IDF to build projects.
+## Example Output
 
+* Firstly, go to the source code, find `tcp_server.c`, which is considered as main file.
 
-## Troubleshooting
+* From which, please find the function ```wifi_connect("SSID","Password")``` in ```void app_main(void)``` and change the SSID and Password of your Wifi. Then, build and flash into your ESP32. Once it is success, you will see an ``IP address`` in built-in Terminal.
 
-Start server first, to receive data sent from the client (application).
+* Take this address, Open ``Hercules Terminal``, in Tab TCP client, please enter the IP address above, the port is ``3333`` by default. Important to ensure your PC connects with the `same WIFI as ESP32`.
+
+* At the result, you can send any command by using TCP client in Hercules. There are many valid command you can try below.
+
+### LED TASK
+
+Using to Control the LEDs
+
+```
+cmd:LED:all
+cmd:LED:red
+cmd:LED:green
+cmd:LED:yellow
+```
+
+### Temp & Humi Task
+
+Using to Read data from DHT11 sensor
+
+```
+cmd:DHT:all
+cmd:DHT:temp
+cmd:DHT:humi
+```
+
+### Monitoring Task
+
+Using as cleaner trash or invalid command by default, it can be used to count the waiting task, or clear all of them.
+
+```
+cmd:CLN:clean
+cmd:CLN:count
+```

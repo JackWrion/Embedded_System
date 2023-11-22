@@ -5,6 +5,8 @@
 
 This lab will present how FreeRTOS drives tasks in some specific methods, including `Preemption with Time-slicing`, `Preemption without Time-slicing` and `No preepmtion`.
 
+Please check out my demo first: `https://youtu.be/eKx_E3Wqip0`
+
 ## How to use example
 
 ### Hardware Required
