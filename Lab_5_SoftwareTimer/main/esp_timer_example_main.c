@@ -73,6 +73,8 @@ void app_main(void)
 	TimerHandle_t timer1 = xTimerCreate("Timer 1:", pdMS_TO_TICKS(2000), pdTRUE, (void*)timerID_1,  PrintingCallBack);
 	TimerHandle_t timer2 = xTimerCreate("Timer 2:", pdMS_TO_TICKS(3000), pdTRUE, (void*)timerID_2,  PrintingCallBack);
 
+	vTaskDelay(pdMS_TO_TICKS(2000));
+
 	xTimerStart(timer1, 0);
 	xTimerStart(timer2, 0);
 }
