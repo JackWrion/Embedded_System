@@ -20,6 +20,8 @@
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "protocol_examples_common.h"
+#include "FreeRTOSConfig.h"
+
 
 #include "lwip/err.h"
 #include "lwip/sockets.h"
@@ -31,6 +33,7 @@
 /*USER INCLUDE*/
 #include "wifi.h"
 #include "dht11.h"
+#include "pwm.h"
 //#include "DHT22.h"
 
 
@@ -39,6 +42,7 @@
 #define KEEPALIVE_INTERVAL          CONFIG_EXAMPLE_KEEPALIVE_INTERVAL
 #define KEEPALIVE_COUNT             CONFIG_EXAMPLE_KEEPALIVE_COUNT
 
+#define LED_RED 5
 
 
 /*------Global QUEUE---------*/
@@ -66,7 +70,9 @@ void LED_Handler(){
 
 	LED_INIT(18);
 	LED_INIT(19);
-	LED_INIT(21);
+	LED_INIT(LED_RED);
+
+	pwm_init();
 
 
 	char rxBuffer[50];
@@ -100,7 +106,7 @@ void LED_Handler(){
 				ESP_LOGI("LED", "Receive from queue %d bytes: %s", sizeof(rxBuffer), rxBuffer);
 
 				if (strcmp(str[2], "red") == 0){
-					gpio_set_level(21, 1 -  gpio_get_level(21));
+					gpio_set_level(LED_RED, 1 -  gpio_get_level(LED_RED));
 				}
 				else if (strcmp(str[2], "yellow") == 0){
 					gpio_set_level(19, 1 -  gpio_get_level(19));
@@ -109,10 +115,17 @@ void LED_Handler(){
 					gpio_set_level(18, 1 -  gpio_get_level(18));
 				}
 				else if (strcmp(str[2], "all") == 0){
-					int temp = gpio_get_level(21);
-					gpio_set_level(21, 1-temp);
+					int temp = gpio_get_level(LED_RED);
+					gpio_set_level(LED_RED, 1-temp);
 					gpio_set_level(19, 1-temp);
 					gpio_set_level(18, 1-temp);
+				}
+				else if (    strlen(str[2])   == 2  ){
+
+					int duty_cycle = atoi(str[2]);
+					printf("DIMMING: %d\n", duty_cycle);
+					pwm_set_duty(duty_cycle);
+
 				}
 
 			}
@@ -242,7 +255,7 @@ void Cleaning_Handler(){
 //
 
 
-const char *TAG = "TCPv4_Task";
+const char *TAG_CAMERA = "TCPv4_Task";
 
 
 void Recv_Controller(const int sock)
@@ -254,12 +267,12 @@ void Recv_Controller(const int sock)
     do {
         len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
         if (len < 0) {
-            ESP_LOGE(TAG, "Error occurred during receiving: errno %d", errno);
+            ESP_LOGE(TAG_CAMERA, "Error occurred during receiving: errno %d", errno);
         } else if (len == 0) {
-            ESP_LOGW(TAG, "Connection closed");
+            ESP_LOGW(TAG_CAMERA, "Connection closed");
         } else {
             rx_buffer[len] = 0; // Null-terminate whatever is received and treat it like a string
-            ESP_LOGI(TAG, "Received %d bytes: %s", len, rx_buffer);
+            ESP_LOGI(TAG_CAMERA, "Received %d bytes: %s", len, rx_buffer);
 
             // send() can return less bytes than supplied length.
             // Walk-around for robust implementation.
@@ -313,32 +326,32 @@ void tcp_server_task(void *pvParameters)
 
     int listen_sock = socket(addr_family, SOCK_STREAM, ip_protocol);
     if (listen_sock < 0) {
-        ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+        ESP_LOGE(TAG_CAMERA, "Unable to create socket: errno %d", errno);
         vTaskDelete(NULL);
         return;
     }
     int opt = 1;
     setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    ESP_LOGI(TAG, "Socket created");
+    ESP_LOGI(TAG_CAMERA, "Socket created");
 
     int err = bind(listen_sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     if (err != 0) {
-        ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
-        ESP_LOGE(TAG, "IPPROTO: %d", addr_family);
+        ESP_LOGE(TAG_CAMERA, "Socket unable to bind: errno %d", errno);
+        ESP_LOGE(TAG_CAMERA, "IPPROTO: %d", addr_family);
         goto CLEAN_UP;
     }
-    ESP_LOGI(TAG, "Socket bound, port %d", PORT);
+    ESP_LOGI(TAG_CAMERA, "Socket bound, port %d", PORT);
 
     err = listen(listen_sock, 1);
     if (err != 0) {
-        ESP_LOGE(TAG, "Error occurred during listen: errno %d", errno);
+        ESP_LOGE(TAG_CAMERA, "Error occurred during listen: errno %d", errno);
         goto CLEAN_UP;
     }
 
     while (1) {
 
-        ESP_LOGI(TAG, "Socket listening");
+        ESP_LOGI(TAG_CAMERA, "Socket listening");
 
         struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
         socklen_t addr_len = sizeof(source_addr);
@@ -346,7 +359,7 @@ void tcp_server_task(void *pvParameters)
 
         int sock = accept(listen_sock, (struct sockaddr *)&source_addr, &addr_len);
         if (sock < 0) {
-            ESP_LOGE(TAG, "Unable to accept connection: errno %d", errno);
+            ESP_LOGE(TAG_CAMERA, "Unable to accept connection: errno %d", errno);
             break;
         }
 
@@ -362,7 +375,7 @@ void tcp_server_task(void *pvParameters)
 
 
 
-        ESP_LOGI(TAG, "Socket accepted ip address: %s", addr_str);
+        ESP_LOGI(TAG_CAMERA, "Socket accepted ip address: %s", addr_str);
 
 
 
@@ -385,12 +398,12 @@ CLEAN_UP:
 void app_main(void)
 {
 
-	//wifi_connect("Vjppro", "1111.1111");
-	wifi_connect("Jackwrion", "16122002");
+	wifi_connect("Vjppro", "1111.1111");
+	//wifi_connect("Jackwrion", "16122002");
 
 
 	while (!WIFI_FLAG){
-		vTaskDelay(pdMS_TO_TICKS(1000));
+		vTaskDelay(pdMS_TO_TICKS(4000));
 	}
 
 	cmdQueue = xQueueCreate(10, 50);
@@ -400,5 +413,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(LED_Handler, "LED_handler", 2048, NULL , 4, NULL, 1);
     xTaskCreatePinnedToCore(DHT11_Handler, "DHT11_handler", 2048, NULL , 3, NULL, 1);
     xTaskCreatePinnedToCore(Cleaning_Handler, "Cleaning_Handler", 2048, NULL , 0, NULL, 1);
+    //xTaskCreatePinnedToCore(PWM, "PWM Dimming", 2048, NULL , 0, NULL, 0);
+
 
 }
