@@ -18,8 +18,8 @@
 #include "lwip/sys.h"
 
 // Define Station credentials
-#define DEFAULT_WIFI_SSID      "thang_tin"
-#define DEFAULT_WIFI_PWD       "nit_gnaht"
+#define DEFAULT_WIFI_SSID      "Vjppro"
+#define DEFAULT_WIFI_PWD       "1111.1111"
 
 int WIFI_FLAG = 0;
 
